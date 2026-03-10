@@ -35,7 +35,7 @@
       <div class="field">
         <label>Período de liquidación</label>
         <select id="periodo">
-          <option value="mensual">Mensual (210 h/mes)</option>
+          <option value="mensual">Mensual (220 h/mes)</option>
           <option value="quincenal">Quincenal (120 h)</option>
           <option value="semanal">Semanal (42 h)</option>
         </select>
@@ -82,24 +82,35 @@
           <tbody>
             <tr>
               <td><span class="badge-tipo diurna">Trabajo Diurno</span></td>
-              <td>06:00–19:00 L–S</td>
+              <td>Entre 06:00–19:00</td>
               <td class="pct">0%</td>
             </tr>
             <tr>
               <td><span class="badge-tipo nocturna">Trabajo Nocturno</span></td>
-              <td>19:00–06:00 L–S</td>
+              <td>Entre 19:00–06:00</td>
               <td class="pct">0</td>
             </tr>
             <tr>
               <td><span class="badge-tipo diurna">Extra Diurna</span></td>
-              <td>06:00–19:00 L–S</td>
+              <td>Excede 06:00-19:00</td>
               <td class="pct">+25%</td>
             </tr>
             <tr>
               <td><span class="badge-tipo" style="border-color:#E89A6A;color:#E89A6A;">Rec. Nocturno</span></td>
-              <td>19:00–06:00 (no es extra)</td>
+              <td>Entre 19:00–06:00 (no es extra)</td>
               <td class="pct">+35%</td>
             </tr>
+            <tr>
+              <td><span class="badge-tipo diurna">Extra Nocturna</span></td>
+              <td>Entre 19:00-06:00</td>
+              <td class="pct">+75%</td>
+            </tr>
+            <tr>
+              <td><span class="badge-tipo diurna">Hora ordinaria Dom/Fest.</span></td>
+              <td>Laborar un domingo o un festivo </td>
+              <td class="pct">+75%</td>
+            </tr>
+
             <tr>
               <td><span class="badge-tipo dominical">Dom/Festivo diurna</span></td>
               <td>06:00–21:00 D/F</td>
@@ -158,12 +169,13 @@
   const MAX_EXTRAS_DIA = 2;
 
   const TIPOS_HORA = [
-    { value: 'ed',   label: 'Extra diurna (L-S 06–19)',          recargo: 0.25 },
-    { value: 'rn',   label: 'Recargo nocturno (no extra, L–S (19-06))',   recargo: 0.35 },
-    { value: 'en',   label: 'Extra nocturna (L–S 21–06)',         recargo: 0.75 },
-    { value: 'edf',  label: 'Extra Dom/Fest. diurna (06–21)',     recargo: 0.80 },
-    { value: 'enf',  label: 'Extra Dom/Fest. nocturna (21–06)',   recargo: 1.15 },
-    { value: 'rdf',  label: 'Recargo Dom/Fest. (hora ordinaria)', recargo: 0.75 },
+    { value: 'ed',   label: 'Extra diurna (06–19)',          recargo: 0.25 },
+    { value: 'rn',   label: 'Recargo nocturno (NO extra, [19-06])',   recargo: 0.35 },
+    { value: 'en',   label: 'Extra nocturna (21–06)',             recargo: 0.75 },
+    { value: 'odf',  label: 'Hora ordinaria Dom/Fest.',         recargo: 0.80 },
+    { value: 'edf',  label: 'Extra diurna Dom/Fest. (06–21)',     recargo: 1.05 },
+    { value: 'enf',  label: 'Hora nocturna Dom/Fest. (21–06)',   recargo: 1.15 },
+    { value: 'rdf',  label: 'Extra noctura Dom/Fest.',            recargo: 1.55 },
   ];
 
   // ─── SMMLV REF ───
