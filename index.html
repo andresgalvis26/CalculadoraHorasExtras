@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora Horas Extras — Colombia</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <div class="logo">EXTRAS<span>COL</span></div>
+  <div class="badge">Código Sustantivo del Trabajo · 2025</div>
+</header>
+
+<main>
+
+  <!-- ─── PANEL IZQUIERDO: INPUTS ─── -->
+  <div>
+    <div class="section-title">Configuración</div>
+
+    <div class="card">
+      <div class="card-title">Calculadora de<br>Horas Extras</div>
+      <div class="card-subtitle">Legislación laboral colombiana vigente</div>
+
+      <!-- SALARIO -->
+      <div class="field">
+        <label>Salario mensual (COP) <span class="hint">— Base de cálculo</span></label>
+        <input type="number" id="salario" placeholder="1.423.500" min="0" step="1000" />
+        <div class="smmlv-ref" id="smmlv-ref"></div>
+      </div>
+
+      <!-- PERIODO -->
+      <div class="field">
+        <label>Período de liquidación</label>
+        <select id="periodo">
+          <option value="mensual">Mensual (210 h/mes)</option>
+          <option value="quincenal">Quincenal (120 h)</option>
+          <option value="semanal">Semanal (42 h)</option>
+        </select>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- HORAS EXTRAS -->
+      <div class="section-title" style="margin-bottom:12px;">Horas a liquidar</div>
+
+      <div class="info-box">
+        <strong>Límite legal:</strong> máx. <strong>2 h extras/día</strong> y <strong>12 h extras/semana</strong> (Art. 165 CST). El empleador debe obtener autorización del Ministerio del Trabajo para superar estos límites.
+      </div>
+
+      <div class="col-labels">
+        <span>Cantidad (h)</span>
+        <span>Tipo de hora</span>
+        <span></span>
+      </div>
+
+      <div id="horas-container"></div>
+
+      <button class="btn-add" onclick="agregarFila()">+ Agregar tipo de hora</button>
+
+      <div id="alerta-limite" class="alert warning">
+        ⚠ Las horas ingresadas superan el límite legal semanal de 12 horas extras. Se requiere autorización del Ministerio del Trabajo.
+      </div>
+
+      <button class="btn-calc" onclick="calcular()">Calcular liquidación</button>
+    </div>
+
+    <!-- TABLA DE RECARGOS -->
+    <div style="margin-top: 32px;">
+      <div class="section-title">Tabla de recargos</div>
+      <div style="background:var(--dark-2); border:1px solid var(--border); overflow:hidden;">
+        <table class="recargo-table">
+          <thead>
+            <tr>
+              <th>Tipo</th>
+              <th>Horario</th>
+              <th>Recargo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="badge-tipo diurna">Diurna</span></td>
+              <td>06:00–21:00 L–S</td>
+              <td class="pct">+25%</td>
+            </tr>
+            <tr>
+              <td><span class="badge-tipo nocturna">Nocturna</span></td>
+              <td>21:00–06:00 L–S</td>
+              <td class="pct">+75%</td>
+            </tr>
+            <tr>
+              <td><span class="badge-tipo dominical">Dom/Festivo diurna</span></td>
+              <td>06:00–21:00 D/F</td>
+              <td class="pct">+100%</td>
+            </tr>
+            <tr>
+              <td><span class="badge-tipo festivo">Dom/Festivo nocturna</span></td>
+              <td>21:00–06:00 D/F</td>
+              <td class="pct">+150%</td>
+            </tr>
+            <tr>
+              <td><span class="badge-tipo" style="border-color:#E89A6A;color:#E89A6A;">Rec. Nocturno</span></td>
+              <td>21:00–06:00 (no es extra)</td>
+              <td class="pct">+35%</td>
+            </tr>
+            <tr>
+              <td><span class="badge-tipo" style="border-color:var(--green);color:var(--green);">Rec. Dom/Fest.</span></td>
+              <td>Trabajo ordinario D/F</td>
+              <td class="pct">+75%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── PANEL DERECHO: RESULTADOS ─── -->
+  <div>
+    <div class="section-title">Liquidación</div>
+
+    <div id="results-wrapper">
+      <div class="result-empty">
+        <div class="icon">⟁</div>
+        Ingresa el salario y las horas<br>para ver la liquidación
+      </div>
+    </div>
+
+    <!-- INFO LEGAL -->
+    <div style="margin-top:32px;">
+      <div class="section-title">Marco legal</div>
+      <div class="card" style="font-size:11px; color:var(--text-muted); line-height:1.9;">
+        <div style="margin-bottom:12px;"><strong style="color:var(--gold);">Art. 159 CST</strong> — Trabajo suplementario o de horas extras: el que excede la jornada ordinaria.</div>
+        <div style="margin-bottom:12px;"><strong style="color:var(--gold);">Art. 168 CST</strong> — Tasas y liquidación de recargos. El valor de la hora se calcula sobre salario ordinario.</div>
+        <div style="margin-bottom:12px;"><strong style="color:var(--gold);">Art. 161 CST</strong> — Jornada máxima: 8 h/día, 46 h/semana (desde 2026, proceso gradual desde 48h en 2023).</div>
+        <div style="margin-bottom:12px;"><strong style="color:var(--gold);">Art. 179 CST</strong> — Trabajo dominical y festivo obligatorio genera recargo del 75% adicional.</div>
+        <div><strong style="color:var(--gold);">Decreto 1174/2020</strong> — SMMLV 2026: $<span id="smmlv-legal">1.750.905</span> COP + subsidio de transporte $<span id="aux-legal">249.095</span> COP.</div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  // ─── CONSTANTES LEGALES 2025 ───
+  const SMMLV = 1750905;
+  const AUX_TRANSPORTE = 249095;
+  const HORAS_MES = 210;
+  const HORAS_SEMANA = 42; // 2025 (transición gradual Ley 2101/2021)
+  const MAX_EXTRAS_SEMANA = 12;
+  const MAX_EXTRAS_DIA = 2;
+
+  const TIPOS_HORA = [
+    { value: 'ed',   label: 'Extra diurna (L–S 06–21)',          recargo: 0.25 },
+    { value: 'en',   label: 'Extra nocturna (L–S 21–06)',         recargo: 0.75 },
+    { value: 'edf',  label: 'Extra Dom/Fest. diurna (06–21)',     recargo: 1.00 },
+    { value: 'enf',  label: 'Extra Dom/Fest. nocturna (21–06)',   recargo: 1.50 },
+    { value: 'rn',   label: 'Recargo nocturno (no extra, L–S)',   recargo: 0.35 },
+    { value: 'rdf',  label: 'Recargo Dom/Fest. (hora ordinaria)', recargo: 0.75 },
+  ];
+
+  // ─── SMMLV REF ───
+  document.getElementById('smmlv-legal').textContent = SMMLV.toLocaleString('es-CO');
+  document.getElementById('aux-legal').textContent = AUX_TRANSPORTE.toLocaleString('es-CO');
+
+  const salarioInput = document.getElementById('salario');
+  salarioInput.addEventListener('input', () => {
+    const v = parseFloat(salarioInput.value);
+    const ref = document.getElementById('smmlv-ref');
+    if (v && v > 0) {
+      const ratio = (v / SMMLV).toFixed(2);
+      ref.textContent = `≈ ${ratio} SMMLV · Valor hora: $${valorHora(v, 'mensual').toLocaleString('es-CO', {maximumFractionDigits:0})}`;
+    } else {
+      ref.textContent = '';
+    }
+  });
+
+  function valorHora(salario, periodo) {
+    const horas = periodo === 'mensual' ? HORAS_MES : periodo === 'quincenal' ? 120 : 48;
+    return salario / horas;
+  }
+
+  let filaCount = 0;
+
+  function agregarFila(tipo = 'ed', horas = '') {
+    filaCount++;
+    const id = `fila-${filaCount}`;
+    const container = document.getElementById('horas-container');
+    const div = document.createElement('div');
+    div.className = 'hora-row';
+    div.id = id;
+    div.style.animationDelay = `${(filaCount-1)*0.05}s`;
+    div.innerHTML = `
+      <input type="number" placeholder="0" min="0" max="999" step="0.5" class="horas-input" onchange="validarLimites()" />
+      <select class="tipo-select">
+        ${TIPOS_HORA.map(t => `<option value="${t.value}" ${t.value===tipo?'selected':''}>${t.label}</option>`).join('')}
+      </select>
+      <button class="btn-remove" onclick="document.getElementById('${id}').remove(); validarLimites();" title="Eliminar">×</button>
+    `;
+    if (horas) div.querySelector('.horas-input').value = horas;
+    container.appendChild(div);
+  }
+
+  function validarLimites() {
+    const filas = document.querySelectorAll('.hora-row');
+    let totalExtras = 0;
+    filas.forEach(f => {
+      const h = parseFloat(f.querySelector('.horas-input').value) || 0;
+      const tipo = f.querySelector('.tipo-select').value;
+      if (['ed','en','edf','enf'].includes(tipo)) totalExtras += h;
+    });
+    const alerta = document.getElementById('alerta-limite');
+    if (totalExtras > MAX_EXTRAS_SEMANA) {
+      alerta.classList.add('show');
+    } else {
+      alerta.classList.remove('show');
+    }
+  }
+
+  function formatCOP(n) {
+    return '$' + Math.round(n).toLocaleString('es-CO');
+  }
+
+  function calcular() {
+    const salario = parseFloat(document.getElementById('salario').value);
+    const periodo = document.getElementById('periodo').value;
+
+    if (!salario || salario <= 0) {
+      alert('Por favor ingresa un salario válido.');
+      return;
+    }
+
+    const hValor = valorHora(salario, periodo);
+    const filas = document.querySelectorAll('.hora-row');
+
+    if (filas.length === 0) {
+      alert('Agrega al menos una fila de horas.');
+      return;
+    }
+
+    let resultados = [];
+    let totalPagar = 0;
+
+    filas.forEach(f => {
+      const h = parseFloat(f.querySelector('.horas-input').value) || 0;
+      if (h <= 0) return;
+      const tipoVal = f.querySelector('.tipo-select').value;
+      const tipo = TIPOS_HORA.find(t => t.value === tipoVal);
+      const valorExtra = hValor * (1 + tipo.recargo) * h;
+      totalPagar += valorExtra;
+      resultados.push({ tipo, horas: h, valorHora: hValor * (1 + tipo.recargo), total: valorExtra });
+    });
+
+    if (resultados.length === 0) {
+      alert('Ingresa la cantidad de horas en al menos una fila.');
+      return;
+    }
+
+    // ─── RENDERIZAR ───
+    const wrapper = document.getElementById('results-wrapper');
+    wrapper.innerHTML = '';
+
+    // Resumen salario
+    const resumen = document.createElement('div');
+    resumen.innerHTML = `
+      <div style="background:var(--dark-2);border:1px solid var(--border);padding:20px 24px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Salario base</div>
+          <div style="font-size:12px;color:var(--text);">Valor hora ordinaria</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px;color:var(--text);">${formatCOP(salario)}</div>
+          <div style="font-size:11px;color:var(--text-muted);">${formatCOP(hValor)} / hora</div>
+        </div>
+      </div>
+    `;
+    wrapper.appendChild(resumen);
+
+    // Items de resultado
+    resultados.forEach((r, i) => {
+      const item = document.createElement('div');
+      item.className = 'result-item';
+      item.style.animationDelay = `${i * 0.07}s`;
+      item.innerHTML = `
+        <div>
+          <div class="result-label">${r.horas} hora${r.horas !== 1 ? 's' : ''} · ${formatCOP(r.valorHora)}/h</div>
+          <div class="result-type">${r.tipo.label}</div>
+        </div>
+        <div class="result-value">
+          ${formatCOP(r.total)}
+          <span class="hours">+${(r.tipo.recargo * 100).toFixed(0)}% recargo</span>
+        </div>
+      `;
+      wrapper.appendChild(item);
+    });
+
+    // Divider
+    const div = document.createElement('div');
+    div.className = 'divider';
+    wrapper.appendChild(div);
+
+    // Total
+    const total = document.createElement('div');
+    total.className = 'result-item total-row';
+    total.style.animationDelay = `${resultados.length * 0.07}s`;
+    total.innerHTML = `
+      <div>
+        <div class="result-label">Valor total a pagar</div>
+        <div class="result-type">${resultados.reduce((a,r) => a+r.horas, 0).toFixed(1)} horas liquidadas</div>
+      </div>
+      <div class="result-value">${formatCOP(totalPagar)}</div>
+    `;
+    wrapper.appendChild(total);
+
+    // Nota legal si aplica
+    if (salario <= SMMLV * 2) {
+      const nota = document.createElement('div');
+      nota.style.cssText = 'background:rgba(76,175,130,0.07);border:1px solid rgba(76,175,130,0.3);padding:14px 16px;font-size:11px;color:#4CAF82;line-height:1.7;margin-top:12px;';
+      nota.innerHTML = `✓ <strong>Subsidio de transporte:</strong> Si el salario es ≤ 2 SMMLV, el empleado tiene derecho al auxilio de transporte de ${formatCOP(AUX_TRANSPORTE)}/mes (no base para cálculo de horas extras).`;
+      wrapper.appendChild(nota);
+    }
+
+    // Nota SMMLV
+    if (salario < SMMLV) {
+      const alerta2 = document.createElement('div');
+      alerta2.style.cssText = 'background:rgba(207,102,121,0.08);border:1px solid var(--red);padding:14px 16px;font-size:11px;color:var(--red);line-height:1.7;margin-top:12px;';
+      alerta2.innerHTML = `⚠ El salario ingresado (${formatCOP(salario)}) es inferior al SMMLV 2025 (${formatCOP(SMMLV)}). Esto no es legal según el Art. 145 CST.`;
+      wrapper.appendChild(alerta2);
+    }
+  }
+
+  // Inicializar con una fila de ejemplo
+  agregarFila('ed', '');
+  agregarFila('en', '');
+</script>
+</body>
+</html>
