@@ -11,7 +11,7 @@
 
 <header>
   <div class="logo">EXTRAS<span>COL</span></div>
-  <div class="badge">Código Sustantivo del Trabajo · 2025</div>
+  <div class="badge">Código Sustantivo del Trabajo · 2026</div>
 </header>
 
 <main>
@@ -27,7 +27,7 @@
       <!-- SALARIO -->
       <div class="field">
         <label>Salario mensual (COP) <span class="hint">— Base de cálculo</span></label>
-        <input type="number" id="salario" placeholder="1.423.500" min="0" step="1000" />
+        <input type="number" id="salario" placeholder="1.750.905" min="0" step="1000" />
         <div class="smmlv-ref" id="smmlv-ref"></div>
       </div>
 
@@ -81,30 +81,36 @@
           </thead>
           <tbody>
             <tr>
-              <td><span class="badge-tipo diurna">Diurna</span></td>
-              <td>06:00–21:00 L–S</td>
+              <td><span class="badge-tipo diurna">Trabajo Diurno</span></td>
+              <td>06:00–19:00 L–S</td>
+              <td class="pct">0%</td>
+            </tr>
+            <tr>
+              <td><span class="badge-tipo nocturna">Trabajo Nocturno</span></td>
+              <td>19:00–06:00 L–S</td>
+              <td class="pct">0</td>
+            </tr>
+            <tr>
+              <td><span class="badge-tipo diurna">Extra Diurna</span></td>
+              <td>06:00–19:00 L–S</td>
               <td class="pct">+25%</td>
             </tr>
             <tr>
-              <td><span class="badge-tipo nocturna">Nocturna</span></td>
-              <td>21:00–06:00 L–S</td>
-              <td class="pct">+75%</td>
+              <td><span class="badge-tipo" style="border-color:#E89A6A;color:#E89A6A;">Rec. Nocturno</span></td>
+              <td>19:00–06:00 (no es extra)</td>
+              <td class="pct">+35%</td>
             </tr>
             <tr>
               <td><span class="badge-tipo dominical">Dom/Festivo diurna</span></td>
               <td>06:00–21:00 D/F</td>
-              <td class="pct">+100%</td>
+              <td class="pct">+80%</td>
             </tr>
             <tr>
               <td><span class="badge-tipo festivo">Dom/Festivo nocturna</span></td>
               <td>21:00–06:00 D/F</td>
-              <td class="pct">+150%</td>
+              <td class="pct">+115%</td>
             </tr>
-            <tr>
-              <td><span class="badge-tipo" style="border-color:#E89A6A;color:#E89A6A;">Rec. Nocturno</span></td>
-              <td>21:00–06:00 (no es extra)</td>
-              <td class="pct">+35%</td>
-            </tr>
+
             <tr>
               <td><span class="badge-tipo" style="border-color:var(--green);color:var(--green);">Rec. Dom/Fest.</span></td>
               <td>Trabajo ordinario D/F</td>
@@ -146,17 +152,17 @@
   // ─── CONSTANTES LEGALES 2025 ───
   const SMMLV = 1750905;
   const AUX_TRANSPORTE = 249095;
-  const HORAS_MES = 210;
-  const HORAS_SEMANA = 42; // 2025 (transición gradual Ley 2101/2021)
+  const HORAS_MES = 220;
+  const HORAS_SEMANA = 44; // 2025 (transición gradual Ley 2101/2021)
   const MAX_EXTRAS_SEMANA = 12;
   const MAX_EXTRAS_DIA = 2;
 
   const TIPOS_HORA = [
-    { value: 'ed',   label: 'Extra diurna (L–S 06–21)',          recargo: 0.25 },
+    { value: 'ed',   label: 'Extra diurna (L-S 06–19)',          recargo: 0.25 },
+    { value: 'rn',   label: 'Recargo nocturno (no extra, L–S (19-06))',   recargo: 0.35 },
     { value: 'en',   label: 'Extra nocturna (L–S 21–06)',         recargo: 0.75 },
-    { value: 'edf',  label: 'Extra Dom/Fest. diurna (06–21)',     recargo: 1.00 },
-    { value: 'enf',  label: 'Extra Dom/Fest. nocturna (21–06)',   recargo: 1.50 },
-    { value: 'rn',   label: 'Recargo nocturno (no extra, L–S)',   recargo: 0.35 },
+    { value: 'edf',  label: 'Extra Dom/Fest. diurna (06–21)',     recargo: 0.80 },
+    { value: 'enf',  label: 'Extra Dom/Fest. nocturna (21–06)',   recargo: 1.15 },
     { value: 'rdf',  label: 'Recargo Dom/Fest. (hora ordinaria)', recargo: 0.75 },
   ];
 
